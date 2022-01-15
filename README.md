@@ -1,14 +1,14 @@
 # Waste Collection Calendar - plain text to iCal
 
 This script was written to convert the City of York Council's Waste Collection Calendar (plain text version) into a format suitable for import into online calendars such as [Google Calendar](https://calendar.google.com/).
-The objective here is to get notified by email on the day or night before the bins/recyling is collected, as a reminder to "put the bin out". 
+The objective here is to get notified by email on the day or night before the bins/recyling is collected, as a reminder to _put the bin out_. 
 Most if not all online calendars provide the ability to send email notifications for upcoming events.
 
-Currently the output file generated appears to be incompatible with Yahoo Calendar - attempting to do so results in a generic, unhelpful "Failed to import X calendar" message.
+Currently the output file generated appears to be incompatible with Yahoo Calendar - attempting to do so results in a generic, unhelpful _Failed to import X calendar_ message.
 The output file _is_ importable into Google Calendar, however.
-Note: the script is a VBScript (Windows only)
+Note: the script is a VBScript (Windows only).
 
-1. Go to the Waste collection calendar - https://myaccount.york.gov.uk/bin-collections - do a postcode lookup
+1. Go to the Waste Collection Calendar - https://myaccount.york.gov.uk/bin-collections - do a postcode lookup
 2. Click the "View your waste and recycling calendar for the current year" link
 3. Click the 'TEXT ONLY VERSION' button
 4. Copy all of the dates into the buffer, by left-click-dragging down the page and pressing CTRL+C

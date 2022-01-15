@@ -1,4 +1,4 @@
-# Waste collection calendar - plain text to iCal
+# Waste Collection Calendar - plain text to iCal
 
 This script was written to convert the City of York Council's Waste Collection Calendar (plain text version) into a format suitable for import into online calendars such as [Google Calendar](https://calendar.google.com/).
 The objective here is to get notified by email on the day or night before the bins/recyling is collected, as a reminder to "put the bin out". 

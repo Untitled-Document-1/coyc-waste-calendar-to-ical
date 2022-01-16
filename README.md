@@ -20,5 +20,14 @@ Note: the script is a VBScript (Windows only).
 
 A sample plain text input file is included for testing & comparison purposes.
 
+## Tip(s):
+
+Add a dedicated calendar for this, so that you can set event notifications at the calendar-level. If, generally, you don't tend to use calendar event notifications, but would like to do so solely for bins/recyling events, then a separate calendar is probably for you. Otherwise you'll probably have to set notifications at the event-level, which would be a tedious, manual process.
+
+## Why wouldn't I just use recurring calendar events?
+
+You could create three recurring events, one for `RECYCLING`, one for `REFUSE` and one for `GARDEN`, and it would likely accurately reflect the collection rota for your postcode. The only downside to this is that, if there are any anomolies around Christmas, where the collection day varies, the recurring event wouldn't reflect this. This script takes it from _the horses mouth_, so to speak, rather than assuming the pattern of weekly collections will always hold true.
+
+
 ## TODO: 
 * add missing fields per https://icalendar.org/validator.html - maybe this will fix the import failures seen when trying to import to Yahoo Calendar?

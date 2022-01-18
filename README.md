@@ -32,7 +32,6 @@ You could create three recurring events, one for `RECYCLING`, one for `REFUSE` a
 * add missing fields per https://icalendar.org/validator.html - maybe this will fix the import failures seen when trying to import to Yahoo Calendar?
 * put various lines of code into separate functions
 * allow variation of the default `RECYCLING`, `REFUSE` & `GARDEN` event titles
-* postcode lookup as extra `/postcode:` named parameter, obviating steps 1-5, if web scraping (or even a public API) will allow
 
 ## Disclaimer
 * I am not employed or affiliated in any way with City of York Council

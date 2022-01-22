@@ -1,6 +1,32 @@
 ' Code formatted with http://www.vbindent.com
 Option Explicit
-Dim arrData,arrGbDate,arrGbDateWithoutDay,arrGbDateJustDate,arrGbDateJustNum,arrNights,colNamedArguments,objFSO,objTextFile,strInputFilename,strDate,strEvent,strEventStartTime,strEventEndTime,strLine,strRecyclingEvent,dateValidDate,dateValidDateMinusOne,dateValidDateMinusOneInIsoFormat,stderr,strValidDate,objIcsFile,strOutputfile,strRefuseEventTitle,strRecyclingEventTitle,strGardenEventTitle
+Dim arrData, _ 
+arrGbDate, _ 
+arrGbDateJustDate, _ 
+arrGbDateJustNum, _ 
+arrGbDateWithoutDay, _ 
+arrNights, _ 
+colNamedArguments, _ 
+dateValidDate, _ 
+dateValidDateMinusOne, _ 
+dateValidDateMinusOneInIsoFormat, _ 
+objFSO, _ 
+objIcsFile, _ 
+objTextFile, _ 
+stderr, _ 
+strDate, _ 
+strEvent, _ 
+strEventEndTime, _ 
+strEventStartTime, _ 
+strGardenEventTitle, _
+strInputFilename, _ 
+strLine, _ 
+strOutputfile, _ 
+strRecyclingEvent, _ 
+strRecyclingEventTitle, _ 
+strRefuseEventTitle, _ 
+strValidDate
+
 Const FOR_READING = 1, FOR_WRITING = 2
 Set colNamedArguments = WScript.Arguments.Named
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -84,15 +110,15 @@ printFooter()
 objTextFile.Close
 objIcsFile.Close
 
-Function printHeader()
+Sub printHeader()
 	objIcsFile.writeline "BEGIN:VCALENDAR"
 	objIcsFile.writeline "PRODID://Shampoo//Calendar//EN"
 	objIcsFile.writeline "VERSION:2.0"
-End Function
+End Sub
 
-Function printFooter()
+Sub printFooter()
 	objIcsFile.writeline "END:VCALENDAR"
-End Function
+End Sub
 
 Function rawToTitle(raw)
 	Select Case raw

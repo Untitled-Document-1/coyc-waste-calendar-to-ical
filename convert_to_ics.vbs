@@ -1,30 +1,29 @@
 ' Code formatted with http://www.vbindent.com
 Option Explicit
-Dim arrData, _ 
-arrGbDate, _ 
-arrGbDateJustDate, _ 
-arrGbDateJustNum, _ 
-arrGbDateWithoutDay, _ 
-arrNights, _ 
-colNamedArguments, _ 
-dateValidDate, _ 
-dateValidDateMinusOne, _ 
-dateValidDateMinusOneInIsoFormat, _ 
-objFSO, _ 
-objIcsFile, _ 
-objTextFile, _ 
-stderr, _ 
-strDate, _ 
-strEvent, _ 
-strEventEndTime, _ 
-strEventStartTime, _ 
+Dim arrData, _
+arrGbDate, _
+arrGbDateJustDate, _
+arrGbDateJustNum, _
+arrGbDateWithoutDay, _
+arrNights, _
+colNamedArguments, _
+dateValidDate, _
+dateValidDateMinusOne, _
+dateValidDateMinusOneInIsoFormat, _
+objFSO, _
+objIcsFile, _
+objTextFile, _
+stderr, _
+strDate, _
+strEvent, _
+strEventEndTime, _
+strEventStartTime, _
 strGardenEventTitle, _
-strInputFilename, _ 
-strLine, _ 
-strOutputfile, _ 
-strRecyclingEvent, _ 
-strRecyclingEventTitle, _ 
-strRefuseEventTitle, _ 
+strInputFilename, _
+strLine, _
+strOutputfile, _
+strRecyclingEventTitle, _
+strRefuseEventTitle, _
 strValidDate
 
 Const FOR_READING = 1, FOR_WRITING = 2
@@ -91,12 +90,11 @@ printHeader()
 
 Do Until objTextFile.AtEndOfStream
 	strLine = objTextFile.ReadLine
-' Filter in the "data" lines
-	If InStr(strLine, "-") > 0 Then
+	If IsArray(lineToArray(strLine)) Then
 		arrData = lineToArray(strLine)
 		strDate = arrData(0)
 		strEvent = arrData(1)
-' Write the iCal event for the particular date
+		' Write the iCal event for the particular date
 		objIcsFile.writeline "BEGIN:VEVENT"
 		objIcsFile.writeline "SUMMARY:" & rawToTitle(strEvent)
 		objIcsFile.writeline "DTSTART;TZID=Europe/London:" & strDate & "T" & strEventStartTime & "00"
@@ -132,32 +130,35 @@ Function rawToTitle(raw)
 End Function
 
 Function lineToArray(line)
-'Example line:
-' Wednesday, 8th December 2021 - RECYCLING
-	arrNights = Split(strLine, " - ")
+	'Example line:
+	' Wednesday, 8th December 2021 - RECYCLING
+	Dim myDateMatches, _
+	myEventMatches, _
+	myRegExpDate, _
+	myRegExpEvent, _
+	strRecyclingEvent, _
+	oMatch
 
-' - RECYCLING
-	strRecyclingEvent = arrNights(1)
+	Set myRegExpDate = New RegExp
+	myRegExpDate.Pattern = ",\s([0-9]{1,2})(th|nd|st|rd)\s(January|February|March|April|May|June|July|August|September|October|November|December)\s([0-9]{4})"
+	Set myDateMatches = myRegExpDate.Execute(line)
+	If myDateMatches.Count > 0 Then
+		Set oMatch = myDateMatches(0)
+		dateValidDate = CDate(oMatch.SubMatches(0) & " " & oMatch.SubMatches(2) & " " & oMatch.SubMatches(3))
+		dateValidDateMinusOne = DateAdd("d",-1,dateValidDate)
+		dateValidDateMinusOneInIsoFormat = Year(dateValidDateMinusOne) & Right("00" & Month(dateValidDateMinusOne), 2) & Right("00" & Day(dateValidDateMinusOne), 2)
+	End If
 
-' Wednesday, 8th December 2021
-	arrGbDate = Split(arrNights(0), ",")
+	Set myRegExpEvent = New RegExp
+	myRegExpEvent.Pattern = "(GARDEN|REFUSE|RECYCLING)$"
+	Set myEventMatches = myRegExpEvent.Execute(line)
+	If myEventMatches.Count > 0 Then
+		Set oMatch = myEventMatches(0)
+		strRecyclingEvent = oMatch.SubMatches(0)
+	End If
 
-' 8th December 2021
-	arrGbDateWithoutDay = trim(arrGbDate(1))
+	If myDateMatches.Count > 0 And myEventMatches.Count > 0 Then
+		lineToArray=array(dateValidDateMinusOneInIsoFormat,strRecyclingEvent)
+	End If
 
-' 8th
-	arrGbDateJustDate = Split(arrGbDateWithoutDay, " ")
-
-' 8
-	arrGbDateJustNum = replace(replace(replace(replace(arrGbDateJustDate(0),"nd","",1,1),"st","",1,1),"rd","",1,1),"th","",1,1)
-
-' 8 December 2021
-	strValidDate = arrGbDateJustNum & " " & arrGbDateJustDate(1) & " " & arrGbDateJustDate(2)
-
-	dateValidDate = CDate(strValidDate)
-	dateValidDateMinusOne = DateAdd("d",-1,dateValidDate)
-	dateValidDateMinusOneInIsoFormat = Year(dateValidDateMinusOne) & Right("00" & Month(dateValidDateMinusOne), 2) & Right("00" & Day(dateValidDateMinusOne), 2)
-'Wscript.Echo DEBUG: dateValidDateMinusOneInIsoFormat & " " & strRecyclingEvent
-
-	lineToArray=array(dateValidDateMinusOneInIsoFormat,strRecyclingEvent)
 End Function

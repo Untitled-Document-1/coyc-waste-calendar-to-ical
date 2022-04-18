@@ -33,56 +33,56 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 Set stderr = objFSO.GetStandardStream(2)
 
 If IsEmpty(colNamedArguments.Item("inputfile")) Then
-	stderr.WriteLine "The full filepath to an input file must be specified"
-	WScript.Quit 1
+    stderr.WriteLine "The full filepath to an input file must be specified"
+    WScript.Quit 1
 Else
-	strInputFilename = colNamedArguments.Item("inputfile")
+    strInputFilename = colNamedArguments.Item("inputfile")
 End If
 
 If IsEmpty(colNamedArguments.Item("outputfile")) Then
-	stderr.WriteLine "The full filepath to an output file must be specified"
-	WScript.Quit 1
+    stderr.WriteLine "The full filepath to an output file must be specified"
+    WScript.Quit 1
 Else
-	strOutputfile = colNamedArguments.Item("outputfile")
+    strOutputfile = colNamedArguments.Item("outputfile")
 End If
 
 If IsEmpty(colNamedArguments.Item("eventStartTime")) Then
-	stderr.WriteLine "An event start time must be specified, e.g. 1800"
-	WScript.Quit 1
+    stderr.WriteLine "An event start time must be specified, e.g. 1800"
+    WScript.Quit 1
 Else
-	strEventStartTime = colNamedArguments.Item("eventStartTime")
+    strEventStartTime = colNamedArguments.Item("eventStartTime")
 End If
 
 If IsEmpty(colNamedArguments.Item("eventEndTime")) Then
-	stderr.WriteLine "An event end time must be specified, e.g. 1810"
-	WScript.Quit 1
+    stderr.WriteLine "An event end time must be specified, e.g. 1810"
+    WScript.Quit 1
 Else
-	strEventEndTime = colNamedArguments.Item("eventEndTime")
+    strEventEndTime = colNamedArguments.Item("eventEndTime")
 End If
 
 If objFSO.FileExists(strInputFilename) Then
-	Set objTextFile = objFSO.OpenTextFile(strInputFilename, FOR_READING)
+    Set objTextFile = objFSO.OpenTextFile(strInputFilename, FOR_READING)
 Else
-	stderr.WriteLine "The input file specified does not exist"
-	WScript.Quit 1
+    stderr.WriteLine "The input file specified does not exist"
+    WScript.Quit 1
 End If
 
 If IsEmpty(colNamedArguments.Item("refusetitle")) Then
-	strRefuseEventTitle = "REFUSE"
+    strRefuseEventTitle = "REFUSE"
 Else
-	strRefuseEventTitle = colNamedArguments.Item("refusetitle")
+    strRefuseEventTitle = colNamedArguments.Item("refusetitle")
 End If
 
 If IsEmpty(colNamedArguments.Item("recyclingtitle")) Then
-	strRecyclingEventTitle = "RECYCLING"
+    strRecyclingEventTitle = "RECYCLING"
 Else
-	strRecyclingEventTitle = colNamedArguments.Item("recyclingtitle")
+    strRecyclingEventTitle = colNamedArguments.Item("recyclingtitle")
 End If
 
 If IsEmpty(colNamedArguments.Item("gardentitle")) Then
-	strGardenEventTitle = "GARDEN"
+    strGardenEventTitle = "GARDEN"
 Else
-	strGardenEventTitle = colNamedArguments.Item("gardentitle")
+    strGardenEventTitle = colNamedArguments.Item("gardentitle")
 End If
 
 set objIcsFile = objFSO.OpenTextFile(strOutputfile, FOR_WRITING, true)
@@ -90,7 +90,7 @@ set objIcsFile = objFSO.OpenTextFile(strOutputfile, FOR_WRITING, true)
 printHeader()
 
 Do Until objTextFile.AtEndOfStream
-	strLine = objTextFile.ReadLine
+    strLine = objTextFile.ReadLine
     Set objRecycleInfo = New RecyclingEvent
     ' Write the iCal event for the particular date
     If objRecycleInfo.RecyclingEventType <> "" And objRecycleInfo.RecyclingEventDate <> "" Then
@@ -108,35 +108,35 @@ objTextFile.Close
 objIcsFile.Close
 
 Sub printHeader()
-	objIcsFile.writeline "BEGIN:VCALENDAR"
-	objIcsFile.writeline "PRODID://Shampoo//Calendar//EN"
-	objIcsFile.writeline "VERSION:2.0"
+    objIcsFile.writeline "BEGIN:VCALENDAR"
+    objIcsFile.writeline "PRODID://Shampoo//Calendar//EN"
+    objIcsFile.writeline "VERSION:2.0"
 End Sub
 
 Sub printFooter()
-	objIcsFile.writeline "END:VCALENDAR"
+    objIcsFile.writeline "END:VCALENDAR"
 End Sub
 
 Function rawToTitle(raw)
-	Select Case raw
-	Case "REFUSE"
-		rawToTitle = strRefuseEventTitle
-	Case "RECYCLING"
-		rawToTitle = strRecyclingEventTitle
-	Case "GARDEN"
-		rawToTitle = strGardenEventTitle
-	End Select
+    Select Case raw
+    Case "REFUSE"
+        rawToTitle = strRefuseEventTitle
+    Case "RECYCLING"
+        rawToTitle = strRecyclingEventTitle
+    Case "GARDEN"
+        rawToTitle = strGardenEventTitle
+    End Select
 End Function
 
 Function lineToData(line,prop)
-	'Example line:
-	' Wednesday, 8th December 2021 - RECYCLING
-	Dim objDateMatches, _
-	objEventMatches, _
+    'Example line:
+    ' Wednesday, 8th December 2021 - RECYCLING
+    Dim objDateMatches, _
+    objEventMatches, _
     objMatch, _
-	objRegExpDate, _
-	objRegExpEvent, _
-	strRecyclingEvent
+    objRegExpDate, _
+    objRegExpEvent, _
+    strRecyclingEvent
 
     If prop = "RecyclingEventDate" Then
         Set objRegExpDate = New RegExp
@@ -165,10 +165,10 @@ Function lineToData(line,prop)
 End Function
 
 Class RecyclingEvent
-	Public Property Get RecyclingEventType
-		RecyclingEventType = lineToData(strLine,"RecyclingEventType")
-	End Property
-	Public Property Get RecyclingEventDate
-		RecyclingEventDate = lineToData(strLine,"RecyclingEventDate")
-	End Property
+    Public Property Get RecyclingEventType
+        RecyclingEventType = lineToData(strLine,"RecyclingEventType")
+    End Property
+    Public Property Get RecyclingEventDate
+        RecyclingEventDate = lineToData(strLine,"RecyclingEventDate")
+    End Property
 End Class

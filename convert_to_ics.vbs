@@ -90,6 +90,7 @@ printHeader()
 
 Do Until objTextFile.AtEndOfStream
 	strLine = objTextFile.ReadLine
+    ' lineToArray function returns empty if the patterns weren't matched
 	If IsArray(lineToArray(strLine)) Then
 		arrData = lineToArray(strLine)
 		strDate = arrData(0)

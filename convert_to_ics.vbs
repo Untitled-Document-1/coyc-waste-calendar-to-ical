@@ -11,6 +11,7 @@ dateValidDate, _
 dateValidDateMinusOne, _
 dateValidDateMinusOneInIsoFormat, _
 objFSO, _
+objRecycleInfo, _
 objIcsFile, _
 objTextFile, _
 stderr, _
@@ -90,18 +91,15 @@ printHeader()
 
 Do Until objTextFile.AtEndOfStream
 	strLine = objTextFile.ReadLine
-    ' lineToArray function returns empty if the patterns weren't matched
-	If IsArray(lineToArray(strLine)) Then
-		arrData = lineToArray(strLine)
-		strDate = arrData(0)
-		strEvent = arrData(1)
-		' Write the iCal event for the particular date
-		objIcsFile.writeline "BEGIN:VEVENT"
-		objIcsFile.writeline "SUMMARY:" & rawToTitle(strEvent)
-		objIcsFile.writeline "DTSTART;TZID=Europe/London:" & strDate & "T" & strEventStartTime & "00"
-		objIcsFile.writeline "DTEND;TZID=Europe/London:" & strDate & "T" & strEventEndTime & "00"
-		objIcsFile.writeline "END:VEVENT"
-	End If
+    Set objRecycleInfo = New RecyclingEvent
+    ' Write the iCal event for the particular date
+    If objRecycleInfo.RecyclingEventType <> "" And objRecycleInfo.RecyclingEventDate <> "" Then
+        objIcsFile.writeline "BEGIN:VEVENT"
+        objIcsFile.writeline "SUMMARY:" & objRecycleInfo.RecyclingEventType
+        objIcsFile.writeline "DTSTART;TZID=Europe/London:" & objRecycleInfo.RecyclingEventDate & "T" & strEventStartTime & "00"
+        objIcsFile.writeline "DTEND;TZID=Europe/London:" & objRecycleInfo.RecyclingEventDate & "T" & strEventEndTime & "00"
+        objIcsFile.writeline "END:VEVENT"
+    End If
 Loop
 
 printFooter()
@@ -130,7 +128,7 @@ Function rawToTitle(raw)
 	End Select
 End Function
 
-Function lineToArray(line)
+Function lineToData(line,prop)
 	'Example line:
 	' Wednesday, 8th December 2021 - RECYCLING
 	Dim objDateMatches, _
@@ -140,26 +138,37 @@ Function lineToArray(line)
 	objRegExpEvent, _
 	strRecyclingEvent
 
-	Set objRegExpDate = New RegExp
-	objRegExpDate.Pattern = ",\s([0-9]{1,2})(th|nd|st|rd)\s(January|February|March|April|May|June|July|August|September|October|November|December)\s([0-9]{4})"
-	Set objDateMatches = objRegExpDate.Execute(line)
-	If objDateMatches.Count > 0 Then
-		Set objMatch = objDateMatches(0)
-		dateValidDate = CDate(objMatch.SubMatches(0) & " " & objMatch.SubMatches(2) & " " & objMatch.SubMatches(3))
-		dateValidDateMinusOne = DateAdd("d",-1,dateValidDate)
-		dateValidDateMinusOneInIsoFormat = Year(dateValidDateMinusOne) & Right("00" & Month(dateValidDateMinusOne), 2) & Right("00" & Day(dateValidDateMinusOne), 2)
-	End If
+    If prop = "RecyclingEventDate" Then
+        Set objRegExpDate = New RegExp
+        objRegExpDate.Pattern = ",\s([0-9]{1,2})(th|nd|st|rd)\s(January|February|March|April|May|June|July|August|September|October|November|December)\s([0-9]{4})"
+        Set objDateMatches = objRegExpDate.Execute(line)
+        If objDateMatches.Count > 0 Then
+            Set objMatch = objDateMatches(0)
+            dateValidDate = CDate(objMatch.SubMatches(0) & " " & objMatch.SubMatches(2) & " " & objMatch.SubMatches(3))
+            dateValidDateMinusOne = DateAdd("d",-1,dateValidDate)
+            dateValidDateMinusOneInIsoFormat = Year(dateValidDateMinusOne) & Right("00" & Month(dateValidDateMinusOne), 2) & Right("00" & Day(dateValidDateMinusOne), 2)
+            lineToData=dateValidDateMinusOneInIsoFormat
+        End If
+    End If
 
-	Set objRegExpEvent = New RegExp
-	objRegExpEvent.Pattern = "(GARDEN|REFUSE|RECYCLING)$"
-	Set objEventMatches = objRegExpEvent.Execute(line)
-	If objEventMatches.Count > 0 Then
-		Set objMatch = objEventMatches(0)
-		strRecyclingEvent = objMatch.SubMatches(0)
-	End If
-
-	If objDateMatches.Count > 0 And objEventMatches.Count > 0 Then
-		lineToArray=array(dateValidDateMinusOneInIsoFormat,strRecyclingEvent)
-	End If
+    If prop = "RecyclingEventType" Then
+        Set objRegExpEvent = New RegExp
+        objRegExpEvent.Pattern = "(GARDEN|REFUSE|RECYCLING)$"
+        Set objEventMatches = objRegExpEvent.Execute(line)
+        If objEventMatches.Count > 0 Then
+            Set objMatch = objEventMatches(0)
+            strRecyclingEvent = objMatch.SubMatches(0)
+            lineToData=strRecyclingEvent
+        End If
+    End If
 
 End Function
+
+Class RecyclingEvent
+	Public Property Get RecyclingEventType
+		RecyclingEventType = lineToData(strLine,"RecyclingEventType")
+	End Property
+	Public Property Get RecyclingEventDate
+		RecyclingEventDate = lineToData(strLine,"RecyclingEventDate")
+	End Property
+End Class

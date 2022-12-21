@@ -15,6 +15,7 @@ objRecycleInfo, _
 objIcsFile, _
 objTextFile, _
 stderr, _
+strAlarmTrigger, _
 strDate, _
 strEvent, _
 strEventEndTime, _
@@ -88,6 +89,11 @@ End If
 
 If colNamedArguments.Exists("reminderemailaddress") Then
     strReminderEmailAddress = colNamedArguments.Item("reminderemailaddress")
+    If InStr(1, strReminderEmailAddress, "yahoo", VBTextCompare) > 0 Then
+      strAlarmTrigger = "-PT5M"
+    Else
+      strAlarmTrigger = "-PT0M"
+    End If
 End If
 
 set objIcsFile = objFSO.OpenTextFile(strOutputfile, FOR_WRITING, true)
@@ -107,7 +113,7 @@ Do Until objTextFile.AtEndOfStream
         objIcsFile.writeline "DTEND;TZID=Europe/London:" & objRecycleInfo.RecyclingEventDate & "T" & replace(strEventEndTime,":","") & "00"
         If colNamedArguments.Exists("reminderemailaddress") Then
           objIcsFile.writeline "BEGIN:VALARM"
-          objIcsFile.writeline "TRIGGER:-PT0M"
+          objIcsFile.writeline "TRIGGER:" & strAlarmTrigger
           objIcsFile.writeline "ACTION:EMAIL"
           objIcsFile.writeline "ATTENDEE:" & strReminderEmailAddress
           objIcsFile.writeline "SUMMARY:Put the " & strRefuseEventTitle & " out"

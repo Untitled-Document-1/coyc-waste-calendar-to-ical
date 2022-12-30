@@ -89,7 +89,7 @@ End If
 
 If colNamedArguments.Exists("reminderemailaddress") Then
     strReminderEmailAddress = colNamedArguments.Item("reminderemailaddress")
-    If InStr(1, strReminderEmailAddress, "yahoo", VBTextCompare) > 0 Then
+    If InStr(1, strReminderEmailAddress, "@yahoo.", VBTextCompare) > 0 Then
       strAlarmTrigger = "-PT5M"
     Else
       strAlarmTrigger = "-PT0M"
